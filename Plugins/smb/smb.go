@@ -32,9 +32,11 @@ func SmbAuth(ip string, port string, username string, password string) (result b
 		}
 	}
 	if result != false {
-		gologger.Infof("SMB 爆破成功 " + ip + ":" + port + " " + username + " " + password)
-
-		//gologger.Infof(aurora.Red("SMB 爆破成功 %v:%v %v %v").String(), ip, port, username, password)
+		gologger.Infof("SMB Found: " + ip + ":" + port + " " + username + " " + password)
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: ip, Port: port, UserName: username, Password: password, Group: "SMB"})
+		common.ResultsMap.Unlock()
+		//gologger.Infof(aurora.Red("SMB Found: %v:%v %v %v").String(), ip, port, username, password)
 	}
 	common.Smbwg.Done()
 	return result, err

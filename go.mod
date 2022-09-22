@@ -11,7 +11,6 @@ require (
 	github.com/k8gege/LadonGo v0.0.0-20210727122326-c8fd69155b54
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mattn/go-colorable v0.1.12
-	github.com/monnand/goredis v0.0.0-20160310054727-e23c27d63458
 	github.com/stacktitan/smb v0.0.0-20190531122847-da9a425dceb8
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22

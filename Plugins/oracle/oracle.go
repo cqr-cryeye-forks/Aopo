@@ -27,9 +27,10 @@ func OracleAuth(host string, port string, user string, pass string) (result bool
 	}
 	result = false
 	if result != false {
-		gologger.Infof("Oracle 爆破成功 " + host + ":" + port + " " + user + " " + pass)
-
-		//go gologger.Infof(aurora.Red("Oracle 爆破成功 %v:%v %v %v").String(), host, port, user, pass)
+		gologger.Infof("Oracle Found: " + host + ":" + port + " " + user + " " + pass)
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: host, Port: port, UserName: user, Password: pass, Group: "Oracle"})
+		common.ResultsMap.Unlock()
 	}
 	common.Oraclewg.Done()
 	return result

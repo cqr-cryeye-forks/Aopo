@@ -1,4 +1,4 @@
-package mgo
+package mongodb
 
 //Ladon Scanner for golang
 //Author: k8gege
@@ -12,7 +12,6 @@ import (
 )
 
 func MongoAuth(ip string, port string, username string, password string) (result bool, err error) {
-	//defer common.Mongowg.Done()
 	session, err := mgo.DialWithTimeout("mongodb://"+username+":"+password+"@"+ip+":"+port+"/"+"admin", time.Second*3)
 	if err == nil && session.Ping() == nil {
 		session.Close()
@@ -21,9 +20,10 @@ func MongoAuth(ip string, port string, username string, password string) (result
 		}
 	}
 	if result != false {
-		gologger.Infof("MongoDB 爆破成功 " + ip + ":" + port + " " + username + " " + password)
-
-		//gologger.Infof(aurora.Red("MongoDB 爆破成功 %v:%v %v %v").String(), ip, port, username, password)
+		gologger.Infof("MongoDB Found: " + ip + ":" + port + " " + username + " " + password)
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: ip, Port: port, UserName: username, Password: password, Group: "MongoDB"})
+		common.ResultsMap.Unlock()
 	}
 	common.Mongowg.Done()
 	return result, err

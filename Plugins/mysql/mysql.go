@@ -19,7 +19,7 @@ func MysqlAuth(ip string, port string, user string, pass string) (result bool, e
 	db.Close()
 	if db.Ping() == nil {
 		result = true
-		gologger.Infof("Mysql 爆破成功: " + ip + ":" + port + " " + user + " " + pass)
+		gologger.Infof("Mysql Found: " + ip + ":" + port + " " + user + " " + pass)
 	}
 	common.Mysqlwg.Done()
 	return result, err
@@ -33,7 +33,10 @@ func ScanMysql(ip string, port string, user string, pass string) (err error, res
 		if db.Ping() == nil {
 			db.Close()
 			result = true
-			gologger.Infof("Mysql 爆破成功: " + ip + ":" + port + " " + user + " " + pass)
+			gologger.Infof("Mysql Found: " + ip + ":" + port + " " + user + " " + pass)
+			common.ResultsMap.Lock()
+			common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: ip, Port: port, UserName: user, Password: pass, Group: "MySql"})
+			common.ResultsMap.Unlock()
 		}
 	}
 	return err, result

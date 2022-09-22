@@ -14,12 +14,12 @@ import (
 
 var scan sync.WaitGroup
 
-func ScanwebPort(host string) {
+func ScanWebPort(host string) {
 	defer Portwebwg.Done()
-	for _, p := range Webport {
+	for _, p := range WebPort {
 		scan.Add(1)
 		//CheckPort(net.ParseIP(host),p)
-		go PortwebCheck(host, p)
+		go PortWebCheck(host, p)
 	}
 	scan.Wait()
 	//Portwebwg.Done()
@@ -28,13 +28,20 @@ func ScanPort(host string) {
 	defer Portwg.Done()
 	for p := range PORTList {
 		scan.Add(1)
-		//CheckPort(net.ParseIP(host),p)
-		go PortCheck(host, PORTList[p])
+		go PortCheck(host, p, PORTList[p])
+		//var IsPortOpen = go PortCheck(host, PORTList[p])
+		//if IsPortOpen {
+		//	TotalResults.HostData = append(TotalResults.HostData,
+		//		HostInfo{
+		//			Name:   host,
+		//			Port:   PORTList[p],
+		//			Status: "Open"})
+		//}
 	}
 	scan.Wait()
 	//Portwg.Done()
 }
-func PortwebCheck(host string, port int) bool {
+func PortWebCheck(host string, port int) bool {
 	defer scan.Done()
 	p := strconv.Itoa(port)
 	conn, err := net.DialTimeout("tcp", host+":"+p, time.Second*3)
@@ -42,17 +49,18 @@ func PortwebCheck(host string, port int) bool {
 		//fmt.Println(host, p, "Close")
 		return false
 	} else {
-		gologger.Infof("WEB服务: " + host + " " + p + " Open")
-		//_, ok := Portlist[host]
-		Rwmap.Lock()
-		Rwmap.Portweblist[host] = append(Rwmap.Portweblist[host], port)
-		Rwmap.Unlock()
+		gologger.Infof("WEB Service: " + host + " " + p + " Open")
+		//_, ok := PortList[host]
+		ResultsMap.Lock()
+		ResultsMap.PortWebList[host] = append(ResultsMap.PortWebList[host], port)
+		ResultsMap.HostList = append(ResultsMap.HostList, HostInfo{Name: host, Type: "web", Port: port})
+		ResultsMap.Unlock()
 		conn.Close()
 		//scan.Done()
 		return true
 	}
 }
-func PortCheck(host string, port int) bool {
+func PortCheck(host string, name string, port int) bool {
 	defer scan.Done()
 	p := strconv.Itoa(port)
 	conn, err := net.DialTimeout("tcp", host+":"+p, time.Second*3)
@@ -60,11 +68,12 @@ func PortCheck(host string, port int) bool {
 		//fmt.Println(host, p, "Close")
 		return false
 	} else {
-		gologger.Infof("主机服务: " + host + " " + p + " Open")
-		//_, ok := Portlist[host]
-		Rwmap.Lock()
-		Rwmap.Portlist[host] = append(Rwmap.Portlist[host], port)
-		Rwmap.Unlock()
+		gologger.Infof("Host: " + host + " " + p + " Open")
+		//_, ok := PortList[host]
+		ResultsMap.Lock()
+		ResultsMap.PortList[host] = append(ResultsMap.PortList[host], port)
+		ResultsMap.HostList = append(ResultsMap.HostList, HostInfo{Name: host, Type: name, Port: port})
+		ResultsMap.Unlock()
 		conn.Close()
 		return true
 	}

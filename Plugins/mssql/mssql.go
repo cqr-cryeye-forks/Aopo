@@ -12,8 +12,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 )
 
-func MssqlAuth(ip, port, user, pass string) (result bool, err error) {
-	//defer common.Mssqlwg.Done()
+func MsSqlAuth(ip, port, user, pass string) (result bool, err error) {
 	result = false
 	connString := fmt.Sprintf("server=%s;user id=%s;password=%s;port=%s;encrypt=disable", ip, user, pass, port)
 	db, err := sql.Open("mssql", connString)
@@ -25,8 +24,10 @@ func MssqlAuth(ip, port, user, pass string) (result bool, err error) {
 		}
 	}
 	if result != false {
-		gologger.Infof("Mssql 爆破成功 " + ip + ":" + port + " " + user + " " + pass)
-		//go gologger.Infof(aurora.Red("Mssql 爆破成功 %v:%v %v %v").String(), ip, port, user, pass)
+		gologger.Infof("Mssql Found: " + ip + ":" + port + " " + user + " " + pass)
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: ip, Port: port, UserName: user, Password: pass, Group: "MsSql"})
+		common.ResultsMap.Unlock()
 	}
 	common.Mssqlwg.Done()
 	return result, err

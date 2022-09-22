@@ -339,7 +339,7 @@ func (ftp *FTP) receiveNoDiscard() (string, error) {
 			}
 			if len(str) < 4 {
 				if ftp.debug {
-					log.Println("Uncorrectly terminated response")
+					log.Println("Incorrectly terminated response")
 				}
 				break
 			} else {

@@ -14,10 +14,15 @@ import (
 	"strings"
 )
 
-func Httpscan(url string, port int) {
+func HttpScan(url string, port int) {
 	defer Httpwg.Done()
 	//fmt.Println(url, port)
-	HttpBanner(url, port)
+	result, err := HttpBanner(url, port)
+	if err != nil {
+		//gologger.Errorf(err.Error())
+		return
+	}
+	ResultsMap.UrlData = append(ResultsMap.UrlData, result)
 }
 func IsUrl(url string, port string) (result string) {
 	if !strings.Contains(url, "http") {
@@ -29,7 +34,7 @@ func IsUrl(url string, port string) (result string) {
 	}
 	return url
 }
-func HttpBanner(url string, port int) (result bool, err error) {
+func HttpBanner(url string, port int) (result HttpBannerData, err error) {
 
 	url2 := IsUrl(url, fmt.Sprint(port))
 	response, err := http.Head(url2)
@@ -37,15 +42,14 @@ func HttpBanner(url string, port int) (result bool, err error) {
 	if err != nil {
 		//fmt.Println(err.Error())
 		//os.Exit(2)
-		return false, err
+		return HttpBannerData{}, err
 	}
 
 	//fmt.Println(response)
 	//fmt.Println(response.Status)
 	Xraylist = append(Xraylist, url2)
-	gologger.Infof("WEB资产: " + url2 + " ｜ " + fmt.Sprint(response.StatusCode) + " ｜ " + fmt.Sprint(response.ContentLength) + " ｜ " + title)
-	//gologger.Infof("%v | %v | %v | [%v]", url2, aurora.Yellow(response.StatusCode), aurora.Blue(response.ContentLength), aurora.Green(title))
-	return result, err
+	gologger.Infof("URL: " + url2 + " Status: " + fmt.Sprint(response.StatusCode) + " Content length: " + fmt.Sprint(response.ContentLength) + " Title: " + title)
+	return HttpBannerData{Url: url2, StatusCode: response.StatusCode, ContentLength: response.ContentLength, Title: title}, err
 
 }
 func GetHtml(url string) string {

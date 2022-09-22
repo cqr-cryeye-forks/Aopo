@@ -58,10 +58,13 @@ func ParseIP(host string, filename string, nohosts ...string) (hosts []string, e
 		}
 	}
 	hosts = RemoveDuplicate(hosts)
+	for _, host := range hosts {
+		gologger.Infof("Host found: %s", host)
+	}
 	if len(hosts) == 0 && host != "" && filename != "" {
 		err = ParseIPErr
 	}
-	return
+	return hosts, err
 }
 
 func ParseIPs(ip string) (hosts []string) {
@@ -186,7 +189,7 @@ func IPRange(c *net.IPNet) string {
 func Readipfile(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		gologger.Warningf("打开 %s 时遇到错误, %v", filename, err)
+		gologger.Warningf("Error opening file %s: %v", filename, err)
 		os.Exit(0)
 	}
 	defer func(file *os.File) {

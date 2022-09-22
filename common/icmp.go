@@ -112,7 +112,7 @@ func Scan(host string) {
 		//
 	} else {
 		verip = append(verip, host+"/24")
-		gologger.Infof("ICMP存活网段: " + host + "/24")
+		gologger.Infof("ICMP surviving network segment: " + host + "/24")
 	}
 }
 

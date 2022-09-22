@@ -13,7 +13,7 @@ var Pocs embed.FS
 var Pocpath string
 var PocName string
 
-func Xrayscan(Target string) {
+func XrayScan(Target string) {
 	defer common.Xraywg.Done()
 	lib.Inithttp() //初始化httpclient
 	req, err := http.NewRequest("GET", Target, nil)

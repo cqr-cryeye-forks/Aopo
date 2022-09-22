@@ -151,6 +151,10 @@ func Warningf(format string, args ...interface{}) string {
 }
 
 // Errorf writes an error message on the screen with the default label
+func Errorf(format string, args ...interface{}) string {
+	log(Error, "", format, args...)
+	return format
+}
 
 // Debugf writes an error message on the screen with the default label
 

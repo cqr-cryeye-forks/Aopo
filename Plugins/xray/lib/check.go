@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"Aopo/common"
 	"Aopo/gologger"
 	"crypto/tls"
 	"embed"
@@ -63,7 +64,10 @@ func CheckSinglePoc(req *http.Request, pocpath string) {
 	}
 	isVul, _, name := executePoc(req, poc)
 	if isVul {
-		gologger.Infof("发现漏洞：" + req.URL.String() + " | " + poc.Name + " | " + name)
+		gologger.Infof("Found Vulnerability： " + req.URL.String() + " | " + poc.Name + " | " + name)
+		common.ResultsMap.Lock()
+		common.ResultsMap.Vulnerabilities = append(common.ResultsMap.Vulnerabilities, common.Vulnerability{Url: req.URL.String(), Name: poc.Name, Group: name})
+		common.ResultsMap.Unlock()
 	}
 }
 
@@ -855,8 +859,10 @@ func runPocExec(tasks chan Task, wg *sync.WaitGroup) {
 	for task := range tasks {
 		isVul, _, name := executePoc(task.Req, task.Poc)
 		if isVul {
-			gologger.Infof("发现漏洞：" + task.Req.URL.String() + " | " + task.Poc.Name + " | " + name)
-			//gologger.Infof(aurora.Red("发现漏洞：%v %v %v").String(), task.Req.URL, aurora.Green(task.Poc.Name), aurora.Blue(name))
+			gologger.Warningf("Found Vulnerability：" + task.Req.URL.String() + " | " + task.Poc.Name + " | " + name)
+			common.ResultsMap.Lock()
+			common.ResultsMap.Vulnerabilities = append(common.ResultsMap.Vulnerabilities, common.Vulnerability{Url: task.Req.URL.String(), Name: task.Poc.Name, Group: name})
+			common.ResultsMap.Unlock()
 		}
 	}
 }

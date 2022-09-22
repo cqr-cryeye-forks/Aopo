@@ -95,7 +95,7 @@ import (
 //		}
 //	}
 //	if result != false {
-//		gologger.Infof("SSH 爆破成功 " + host + ":" + port + " " + user + " " + pass)
+//		gologger.Infof("SSH Found: " + host + ":" + port + " " + user + " " + pass)
 //	}
 //	//common.Sshwg.Done()
 //	return result, err
@@ -123,9 +123,12 @@ func ScanSsh(host string, port string, user string, pass string, sum int) {
 			client.Close()
 			session.Close()
 			if err == nil {
-				gologger.Infof("SSH 爆破成功 " + host + ":" + port + " " + user + " " + pass)
+				gologger.Infof("SSH Found: " + host + ":" + port + " " + user + " " + pass)
+				common.ResultsMap.Lock()
+				common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: host, Port: port, UserName: user, Password: pass, Group: "SSH"})
+				common.ResultsMap.Unlock()
 				common.Statuses[sum] = true
-				//common.Rwmap.Sshlist[host] = append(common.Rwmap.Sshlist[host], true)
+				//common.ResultsMap.SshList[host] = append(common.ResultsMap.SshList[host], true)
 			}
 		}
 		//session.Close()

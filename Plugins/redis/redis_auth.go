@@ -22,7 +22,10 @@ func RedisNullAuth(host string, iport int) (err error, result bool) {
 	_, err = client.Ping().Result()
 	defer client.Close()
 	if err == nil {
-		gologger.Infof("Redis 服务存在空口令 " + host + ":" + fmt.Sprintln(iport))
+		gologger.Infof("Redis service has empty password: " + host + ":" + fmt.Sprintln(iport))
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: host, Port: portt, UserName: host, Password: "", Group: "Redis"})
+		common.ResultsMap.Unlock()
 		result = true
 	}
 	common.Rediswg.Done()
@@ -36,7 +39,10 @@ func RedisAuth(host string, iport int, password string) (err error, result bool)
 	_, err = client.Ping().Result()
 	client.Close()
 	if err == nil {
-		gologger.Infof("Redis 服务存在空口令 " + host + ":" + fmt.Sprintln(iport))
+		gologger.Infof("Redis has empty password: " + host + ":" + fmt.Sprintln(iport))
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: host, Port: portt, UserName: host, Password: "", Group: "Redis"})
+		common.ResultsMap.Unlock()
 		result = true
 	}
 	common.Rediswg.Done()

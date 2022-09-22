@@ -13,14 +13,15 @@ import (
 )
 
 func FtpAuth(ip string, port string, user string, pass string) {
-	//fmt.Println(ip+":"+port, time.Duration(5)*time.Second)
 	conn, _ := ftp.DialTimeout(ip+":"+port, time.Duration(5)*time.Second)
 	err := conn.Login(user, pass)
 	fmt.Println(err)
 	if err == nil {
-		defer conn.Logout()
-		defer common.Bp.Done()
-		gologger.Infof("FTP 爆破成功 " + ip + ":" + port + " " + user + " " + pass)
+		conn.Logout()
+		gologger.Infof("FTP Found: " + ip + ":" + port + " " + user + " " + pass)
+		common.ResultsMap.Lock()
+		common.ResultsMap.Credentials = append(common.ResultsMap.Credentials, common.Credential{Url: ip, Port: port, UserName: user, Password: pass, Group: "FTP"})
+		common.ResultsMap.Unlock()
 	}
 
 }
